@@ -13,10 +13,10 @@ elif [ -d "$K8S_CERT_DIR" ]; then
     CERT="$K8S_CERT_DIR/server.crt"
     KEY="$K8S_CERT_DIR/server.key"
 else
-    exec etcdctl "$@"
+    exec /usr/local/bin/etcdctl-bin "$@"
 fi
 
-exec etcdctl \
+exec /usr/local/bin/etcdctl-bin \
     --endpoints="https://127.0.0.1:2379" \
     --cacert="$CACERT" \
     --cert="$CERT" \

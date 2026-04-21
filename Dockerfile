@@ -8,10 +8,11 @@ RUN apt-get update \
 
 ARG TARGETARCH
 RUN ETCD_URL="https://github.com/etcd-io/etcd/releases/download/${ETCD_VERSION}/etcd-${ETCD_VERSION}-linux-${TARGETARCH}.tar.gz" \
-    && curl -sL "${ETCD_URL}" | tar -zxv --strip-components=1 -C /usr/local/bin
+    && curl -sL "${ETCD_URL}" | tar -zxv --strip-components=1 -C /usr/local/bin \
+    && mv /usr/local/bin/etcdctl /usr/local/bin/etcdctl-bin
 
-COPY etcdctl-wrapper.sh /usr/local/bin/etcdctl-wrapper.sh
-RUN chmod +x /usr/local/bin/etcdctl-wrapper.sh
+COPY etcdctl-wrapper.sh /usr/local/bin/etcdctl
+RUN chmod +x /usr/local/bin/etcdctl
 
-ENTRYPOINT ["/usr/local/bin/etcdctl-wrapper.sh"]
+ENTRYPOINT ["/usr/local/bin/etcdctl"]
 CMD []

@@ -12,7 +12,7 @@ docker run --rm -it --platform linux/arm64 dejanualex/etcd-utils:latest version
 
 ## Kubernetes debug container
 
-* **etcd-utils** image leverages debug containers. Just pass the `etcdctl` subcommand: endpoint status, member list, defrag/compaction/snapshots.
+* **etcd-utils** image leverages debug containers. Invoke `etcdctl` with desired subcommand: endpoint status, member list, defrag/compaction/snapshots.
 
 
 ```bash
@@ -20,13 +20,13 @@ docker run --rm -it --platform linux/arm64 dejanualex/etcd-utils:latest version
 kubectl debug node/<nodename> -it --profile=sysadmin \
   --image=dejanualex/etcd-utils:v1.0.1 \
   --image-pull-policy=Always -- \
-  endpoint status --cluster -w table 
+  etcdctl endpoint status --cluster -w table
 
 # check etcd cluster status (works on both k3s and vanilla k8s)
-endpoint status --cluster -w table
+etcdctl endpoint status --cluster -w table
 
 # member IDs, names, peer/client URLs
-member list -w table
+etcdctl member list -w table
 ```
 
 
