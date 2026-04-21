@@ -1,4 +1,5 @@
-FROM debian:12-slim
+#FROM debian:12-slim
+FROM dhi.io/debian-base:bookworm-debian12-dev
 
 ENV ETCD_VERSION="v3.5.5"
 
