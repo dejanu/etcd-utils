@@ -1,7 +1,6 @@
-#FROM debian:12-slim
 FROM dhi.io/debian-base:bookworm-debian12-dev
 
-ENV ETCD_VERSION="v3.5.5"
+ENV ETCD_VERSION="v3.6.10"
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends ca-certificates curl tar \
