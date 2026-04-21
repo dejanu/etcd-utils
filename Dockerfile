@@ -1,4 +1,4 @@
-FROM debian:bookworm-slim
+FROM debian:12-slim
 
 ENV ETCD_VERSION="v3.5.5"
 
