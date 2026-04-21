@@ -15,11 +15,15 @@ docker run --rm -it --platform linux/arm64 dejanualex/etcd-utils:latest etcdctl 
 
 ## Kubernetes usage
 
-* **etcd-utils** image leverages debug containers: `kubectl debug node/<nodename> -it --profile=sysadmin \
+* **etcd-utils** image leverages debug containers. ⚠️ The certificates required for TLS are located under the host root filesystem, typically at `/host`
+
+```bash
+kubectl debug node/<nodename> -it --profile=sysadmin \
   --image=dejanualex/etcd-utils:v1.0.0 \
   --image-pull-policy=Always
-`
-⚠️ The certificates required for TLS are located under the host root filesystem, typically at `/host`
+```
+
+
 
 * Usefull commands once inside the container
 
