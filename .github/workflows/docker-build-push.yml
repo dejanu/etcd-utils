@@ -28,10 +28,8 @@ jobs:
         with:
           images: dejanualex/etcd-utils
           tags: |
-            type=ref,event=branch
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=sha,prefix=sha-,format=short
+            type=semver,pattern={{raw}}
+            type=raw,value=latest
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
