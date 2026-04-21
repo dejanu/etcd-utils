@@ -13,19 +13,23 @@ To explicitly target an architecture:
 docker run --rm -it --platform linux/arm64 dejanualex/etcd-utils:latest etcdctl version
 ```
 
-## Kubernetes usage
+## Kubernetes debug container
 
 * **etcd-utils** image leverages debug containers. ⚠️ The certificates required for TLS are located under the host root filesystem, typically at `/host`
 
 ```bash
+# spin up pod on a control plane node
 kubectl debug node/<nodename> -it --profile=sysadmin \
-  --image=dejanualex/etcd-utils:v1.0.0 \
-  --image-pull-policy=Always
+  --image=dejanualex/etcd-utils:v1.0.1 \
+  --image-pull-policy=Always -- \
+<add etcdctl command according to your kubernetes distribution>
 ```
 
 
 
-* Usefull commands once inside the container
+## Usefull commands once inside the container: endpoint status, member list, defrag/compaction/snapshots
+
+* Using [etcdctl in k3s clusters](https://docs.k3s.io/advanced?_highlight=etcdctl#using-etcdctl)
 
 ```bash
 # check etcd cluster status
@@ -35,13 +39,29 @@ etcdctl --endpoints=https://127.0.0.1:2379 \
   --key=/host/var/lib/rancher/k3s/server/tls/etcd/client.key \
   endpoint status --cluster -w table
 
-# member IDs, names, peer/client URLs.
+# member IDs, names, peer/client URLs
 etcdctl --endpoints=https://127.0.0.1:2379 \
   --cacert=/host/var/lib/rancher/k3s/server/tls/etcd/server-ca.crt \
   --cert=/host/var/lib/rancher/k3s/server/tls/etcd/client.crt \
   --key=/host/var/lib/rancher/k3s/server/tls/etcd/client.key \
   member list -w table
-
-# other operations: defrag/compaction/snapshots
 ```
 
+* k8s vanilla
+
+```bash
+
+# check etcd cluster status
+etcdctl --endpoints=https://127.0.0.1:2379 \
+  --cacert=/host/etc/kubernetes/pki/etcd/ca.crt \
+  --cert=/host/etc/kubernetes/pki/etcd/server.crt \
+  --key=/host/etc/kubernetes/pki/etcd/server.key \
+  endpoint status --cluster -w table
+
+# member IDs, names, peer/client URLs
+etcdctl --endpoints=https://127.0.0.1:2379 \
+  --cacert=/host/etc/kubernetes/pki/etcd/ca.crt \
+  --cert=/host/etc/kubernetes/pki/etcd/server.crt \
+  --key=/host/etc/kubernetes/pki/etcd/server.key \
+  member list -w table
+```
