@@ -5,11 +5,8 @@ The container does not run any etcd commands because it's entrypoint/command is 
 
 ```bash
 docker run --rm -it dejanualex/etcd-utils:latest etcdctl version
-```
 
-To explicitly target an architecture:
-
-```bash
+# explicitly target an architecture:
 docker run --rm -it --platform linux/arm64 dejanualex/etcd-utils:latest etcdctl version
 ```
 
@@ -22,46 +19,30 @@ docker run --rm -it --platform linux/arm64 dejanualex/etcd-utils:latest etcdctl 
 kubectl debug node/<nodename> -it --profile=sysadmin \
   --image=dejanualex/etcd-utils:v1.0.1 \
   --image-pull-policy=Always -- \
-<add etcdctl command according to your kubernetes distribution>
+  endpoint status --cluster -w table 
 ```
 
 
 
-## Usefull commands once inside the container: endpoint status, member list, defrag/compaction/snapshots
+## Useful commands once inside the container: endpoint status, member list, defrag/compaction/snapshots
+
+The entrypoint auto-detects the Kubernetes distribution (k3s or vanilla) from standard cert paths under `/host` and injects `--endpoints`, `--cacert`, `--cert`, and `--key` automatically. Just pass the `etcdctl` subcommand:
+
+```bash
+# check etcd cluster status (works on both k3s and vanilla k8s)
+etcdctl endpoint status --cluster -w table
+
+# member IDs, names, peer/client URLs
+etcdctl member list -w table
+```
+
+Cert paths used per distribution:
+
+| Distribution | cacert | cert | key |
+|---|---|---|---|
+| k3s | `/host/var/lib/rancher/k3s/server/tls/etcd/server-ca.crt` | `client.crt` | `client.key` |
+| vanilla k8s | `/host/etc/kubernetes/pki/etcd/ca.crt` | `server.crt` | `server.key` |
+
+> If neither cert directory is found, the wrapper passes your arguments directly to `etcdctl` so you can still supply flags manually.
 
 * Using [etcdctl in k3s clusters](https://docs.k3s.io/advanced?_highlight=etcdctl#using-etcdctl)
-
-```bash
-# check etcd cluster status
-etcdctl --endpoints=https://127.0.0.1:2379 \
-  --cacert=/host/var/lib/rancher/k3s/server/tls/etcd/server-ca.crt \
-  --cert=/host/var/lib/rancher/k3s/server/tls/etcd/client.crt \
-  --key=/host/var/lib/rancher/k3s/server/tls/etcd/client.key \
-  endpoint status --cluster -w table
-
-# member IDs, names, peer/client URLs
-etcdctl --endpoints=https://127.0.0.1:2379 \
-  --cacert=/host/var/lib/rancher/k3s/server/tls/etcd/server-ca.crt \
-  --cert=/host/var/lib/rancher/k3s/server/tls/etcd/client.crt \
-  --key=/host/var/lib/rancher/k3s/server/tls/etcd/client.key \
-  member list -w table
-```
-
-* k8s vanilla
-
-```bash
-
-# check etcd cluster status
-etcdctl --endpoints=https://127.0.0.1:2379 \
-  --cacert=/host/etc/kubernetes/pki/etcd/ca.crt \
-  --cert=/host/etc/kubernetes/pki/etcd/server.crt \
-  --key=/host/etc/kubernetes/pki/etcd/server.key \
-  endpoint status --cluster -w table
-
-# member IDs, names, peer/client URLs
-etcdctl --endpoints=https://127.0.0.1:2379 \
-  --cacert=/host/etc/kubernetes/pki/etcd/ca.crt \
-  --cert=/host/etc/kubernetes/pki/etcd/server.crt \
-  --key=/host/etc/kubernetes/pki/etcd/server.key \
-  member list -w table
-```
