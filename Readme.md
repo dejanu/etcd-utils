@@ -24,6 +24,7 @@ kubectl debug node/<nodename> -it --profile=sysadmin \
 
 # check etcd cluster status (works on both k3s and vanilla k8s)
 etcdctl endpoint status --cluster -w table
+etcdctl endpoint health --cluster -w table
 
 # member IDs, names, peer/client URLs
 etcdctl member list -w table
