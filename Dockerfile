@@ -1,8 +1,9 @@
-FROM dhi.io/debian-base:bookworm-debian12-dev AS downloader
+FROM debian:bookworm-slim AS downloader
 
 ENV ETCD_VERSION="v3.6.10"
 
 RUN apt-get update \
+    && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends ca-certificates curl tar \
     && rm -rf /var/lib/apt/lists/*
 
@@ -15,6 +16,7 @@ RUN ETCD_URL="https://github.com/etcd-io/etcd/releases/download/${ETCD_VERSION}/
 FROM debian:bookworm-slim
 
 RUN apt-get update \
+    && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
