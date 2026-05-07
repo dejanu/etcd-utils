@@ -12,7 +12,7 @@ RUN ETCD_URL="https://github.com/etcd-io/etcd/releases/download/${ETCD_VERSION}/
     && curl -sL "${ETCD_URL}" | tar -zxv --strip-components=1 -C /out \
     && mv /out/etcdctl /out/etcdctl-bin
 
-FROM debian:bookworm-slim
+FROM dhi.io/debian-base:bookworm-debian12-dev
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends ca-certificates \
