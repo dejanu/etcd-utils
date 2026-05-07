@@ -43,3 +43,4 @@ etcdctl member list -w table
 > If neither cert directory is found, the wrapper passes your arguments directly to `etcdctl` so you can still supply flags manually.
 
 * Using [etcdctl in k3s clusters](https://docs.k3s.io/advanced?_highlight=etcdctl#using-etcdctl)
+* [DHI catalog](https://hub.docker.com/hardened-images/catalog)
