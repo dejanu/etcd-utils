@@ -1,20 +1,22 @@
-FROM dhi.io/debian-base:trixie-debian13-dev AS downloader
+FROM golang:1.25.10-bookworm AS builder
 
-ENV ETCD_VERSION="v3.6.11"
-
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends ca-certificates curl tar \
-    && rm -rf /var/lib/apt/lists/*
-
+ARG ETCD_VERSION="v3.6.11"
+ARG TARGETOS
 ARG TARGETARCH
-RUN ETCD_URL="https://github.com/etcd-io/etcd/releases/download/${ETCD_VERSION}/etcd-${ETCD_VERSION}-linux-${TARGETARCH}.tar.gz" \
-    && mkdir -p /out \
-    && curl -sL "${ETCD_URL}" | tar -zxv --strip-components=1 -C /out \
-    && mv /out/etcdctl /out/etcdctl-bin
+
+WORKDIR /build
+RUN git clone --branch "${ETCD_VERSION}" --depth 1 https://github.com/etcd-io/etcd.git .
+
+WORKDIR /build/etcdctl
+RUN --mount=type=cache,target=/go/pkg/mod \
+    --mount=type=cache,target=/root/.cache/go-build \
+    go get golang.org/x/net@v0.55.0 golang.org/x/sys@v0.45.0 golang.org/x/text@v0.37.0 \
+    && go mod download \
+    && CGO_ENABLED=0 GOOS="${TARGETOS:-linux}" GOARCH="${TARGETARCH}" go build -trimpath -ldflags="-s -w" -o /out/etcdctl-bin .
 
 FROM dhi.io/debian-base:trixie
 
-COPY --chmod=755 --from=downloader /out/etcdctl-bin /usr/local/bin/etcdctl-bin
+COPY --chmod=755 --from=builder /out/etcdctl-bin /usr/local/bin/etcdctl-bin
 COPY --chmod=755 etcdctl-wrapper.sh /usr/local/bin/etcdctl
 
 USER 0
