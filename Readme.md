@@ -65,3 +65,4 @@ If neither directory exists (e.g. you attached to a worker), the wrapper runs `e
 
 * [Using etcdctl in k3s clusters](https://docs.k3s.io/advanced?_highlight=etcdctl#using-etcdctl)
 * [DHI catalog](https://hub.docker.com/hardened-images/catalog) (base images used in the Dockerfile)
+* [etcd releases](https://github.com/etcd-io/etcd/releases): etcd release archives ships all 3 binaries together: `etcd, etcdctl, etcdutl`
