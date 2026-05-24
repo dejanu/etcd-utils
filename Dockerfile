@@ -1,6 +1,6 @@
 FROM dhi.io/debian-base:trixie-debian13-dev AS downloader
 
-ENV ETCD_VERSION="v3.6.10"
+ENV ETCD_VERSION="v3.6.11"
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends ca-certificates curl tar \
