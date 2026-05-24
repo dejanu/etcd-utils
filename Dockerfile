@@ -12,15 +12,12 @@ RUN ETCD_URL="https://github.com/etcd-io/etcd/releases/download/${ETCD_VERSION}/
     && curl -sL "${ETCD_URL}" | tar -zxv --strip-components=1 -C /out \
     && mv /out/etcdctl /out/etcdctl-bin
 
-FROM dhi.io/debian-base:trixie-debian13-dev
+FROM dhi.io/debian-base:trixie
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
+COPY --chmod=755 --from=downloader /out/etcdctl-bin /usr/local/bin/etcdctl-bin
+COPY --chmod=755 etcdctl-wrapper.sh /usr/local/bin/etcdctl
 
-COPY --from=downloader /out/etcdctl-bin /usr/local/bin/etcdctl-bin
-COPY etcdctl-wrapper.sh /usr/local/bin/etcdctl
-RUN chmod +x /usr/local/bin/etcdctl
+USER 0
 
 ENTRYPOINT ["/usr/local/bin/etcdctl"]
 CMD []
