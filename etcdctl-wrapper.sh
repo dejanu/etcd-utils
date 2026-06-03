@@ -2,12 +2,17 @@
 set -e
 
 K3S_CERT_DIR="/host/var/lib/rancher/k3s/server/tls/etcd"
+K0S_CERT_DIR="/host/var/lib/k0s/pki/etcd"
 K8S_CERT_DIR="/host/etc/kubernetes/pki/etcd"
 
 if [ -d "$K3S_CERT_DIR" ]; then
     CACERT="$K3S_CERT_DIR/server-ca.crt"
     CERT="$K3S_CERT_DIR/client.crt"
     KEY="$K3S_CERT_DIR/client.key"
+elif [ -d "$K0S_CERT_DIR" ]; then
+    CACERT="$K0S_CERT_DIR/ca.crt"
+    CERT="$K0S_CERT_DIR/server.crt"
+    KEY="$K0S_CERT_DIR/server.key"
 elif [ -d "$K8S_CERT_DIR" ]; then
     CACERT="$K8S_CERT_DIR/ca.crt"
     CERT="$K8S_CERT_DIR/server.crt"
