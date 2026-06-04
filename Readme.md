@@ -23,6 +23,7 @@ Run the debug container on a node that **runs etcd** and has etcd TLS material o
 |---|---|---|
 | Vanilla Kubernetes (kubeadm, etc.) | **Control plane** nodes | Worker nodes |
 | k3s | **Server** nodes | Agent-only nodes |
+| k0s | **Controller** nodes | Worker nodes |
 | HA control plane | Any control plane / server node that runs etcd | — |
 
 **Why:** etcd is part of the control plane, not the data plane. It stores cluster state and listens on the node (typically `127.0.0.1:2379`). Worker nodes do not run etcd and do not have `/etc/kubernetes/pki/etcd` (or the k3s equivalent). The image entrypoint reads those certs from the host mount at `/host/...` and connects to local etcd; on a worker, those paths are missing and auto-configuration does not apply.
@@ -57,6 +58,7 @@ The entrypoint detects k3s vs vanilla Kubernetes from cert directories under `/h
 | Distribution | Cert directory on host | cacert | cert | key |
 |---|---|---|---|---|
 | k3s | `/host/var/lib/rancher/k3s/server/tls/etcd/` | `server-ca.crt` | `client.crt` | `client.key` |
+| k0s | `/host/var/lib/k0s/pki/etcd/` | `ca.crt` | `server.crt` | `server.key` |
 | vanilla k8s | `/host/etc/kubernetes/pki/etcd/` | `ca.crt` | `server.crt` | `server.key` |
 
 If neither directory exists (e.g. you attached to a worker), the wrapper runs `etcdctl` with your arguments only—supply endpoints and TLS flags yourself, and ensure the debug container can reach etcd on the network.
